@@ -1,0 +1,5 @@
+aiogram
+confluent_kafka
+apscheduler
+sqlalchemy
+loguru 
