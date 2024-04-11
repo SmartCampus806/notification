@@ -11,6 +11,8 @@ services:
 
     environment:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_LISTENERS: PLAINTEXT://localhost:9092
@@ -18,11 +20,14 @@ services:
     network_mode: "host"
     depends_on:
       - zookeeper
+    restart: always
 
   kafka2:
     image: wurstmeister/kafka
     environment:
+      KAFKA_LISTENERS: PLAINTEXT://localhost:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093
+      KAFKA_ADVERTISED_HOST_NAME: localhost
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_LISTENERS: PLAINTEXT://localhost:9093
@@ -30,6 +35,7 @@ services:
     network_mode: "host"
     depends_on:
       - zookeeper
+    restart: always
        
   kafka-ui:
     image: provectuslabs/kafka-ui

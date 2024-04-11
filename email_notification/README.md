@@ -1,3 +1,14 @@
+# Пример сообщения для рассылки email
+```json
+{
+    "to" : "bam10112002@gmail.com",
+    "title": "Оповещение"
+    "template": "HTML template"
+    "data": {"key1": "val1", "key2": "val2"}
+}
+```
+
+# Пример шаблона
 <!DOCTYPE html>
 <html lang=\"ru\">
 <head>

@@ -3,8 +3,10 @@ from aiogram import types
 from loguru import logger as log
 
 from database_managers import UserManager, MessageManager
+from message_convertor import make_message
 from kafka_listener import KafkaConsumer
 from booking_connection import BookingConnection
+from aiogram.enums import ParseMode
 
 
 user_manager = UserManager()
@@ -25,16 +27,21 @@ async def read_messages_from_kafka(bot):
         message = kafka_consumer.get_message()
         if message is None:
             break
-        await __send_message_to_admins(bot, *message)
+
+        if message.get("booking").get("status") == "REQUIRES_CONFIRMATION":
+            await __send_message_to_admins(bot, *message)
+        
         counter += 1
     log.info(f"scheduller 'read_messages_from_kafka' executed. {counter} messages processed.")
 
-async def __send_message_to_admins(bot, booking_id, text):
-    for user in user_manager.get_admin_users():
-        msg = await bot.send_message(user.chat_id, text, reply_markup=__makeKeyboard().as_markup())
-        message_manager.add_message(booking_id=booking_id, message_id=msg.message_id, chat_id=msg.chat.id, text=text)
+async def __send_message_to_admins(bot, booking_id, data:dict):
+    message = make_message(data)
 
-    log.info("The booking mailing was successful. Text=" + text)
+    for user in user_manager.get_admin_users():
+        msg = await bot.send_message(user.chat_id, message, reply_markup=__makeKeyboard().as_markup())
+        message_manager.add_message(booking_id=booking_id, message_id=msg.message_id, chat_id=msg.chat.id, text=message)
+
+    log.info("The booking mailing was successful. Text=" + data)
 
 def __makeKeyboard():
     builder = InlineKeyboardBuilder()

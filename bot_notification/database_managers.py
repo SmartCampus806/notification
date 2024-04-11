@@ -9,7 +9,7 @@ class User(Base):
     __tablename__ = 'users'
 
     chat_id = Column(Integer, primary_key=True)
-    email = Column(String)
+    id = Column(Integer)
     is_admin = Column(Boolean, default=False)
 
 class Message(Base):
@@ -27,21 +27,20 @@ class UserManager:
         Base.metadata.create_all(self.engine)
         self.User = User
 
-    def add_user(
-        self, chat_id, email, is_admin):
+    def add_user(self, chat_id, user_id, is_admin):
         try:
             session = self.Session()
-            user = self.User(chat_id=chat_id, email=email, is_admin=is_admin)
+            user = self.User(chat_id=chat_id, id=user_id, is_admin=is_admin)
             session.add(user)
             session.commit()
             session.close()
-            log.info(f"Saved user whis data: {chat_id}, {email}, {is_admin}.")
+            log.info(f"Saved user whis data: {chat_id}, {user_id}, {is_admin}.")
         except:
             pass
 
-    def find_user_by_email(self, email):
+    def find_user_by_id(self, user_id):
         session = self.Session()
-        user = session.query(self.User).filter_by(email=email).first()
+        user = session.query(self.User).filter_by(id=user_id).first()
         session.close()
         return user
 
@@ -51,13 +50,13 @@ class UserManager:
         session.close()
         return user
 
-    def set_admin_status(self, email, is_admin):
+    def set_admin_status(self, user_id, is_admin):
         session = self.Session()
-        user = session.query(self.User).filter_by(email=email).first()
+        user = session.query(self.User).filter_by(id=user_id).first()
         if user:
             user.is_admin = is_admin
             session.commit()
-            log.info(f"set status is_admin={is_admin} by user with email={email}")
+            log.info(f"set status is_admin={is_admin} by user with user_id={user_id}")
         session.close()
 
 

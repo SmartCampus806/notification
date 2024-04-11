@@ -2,6 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Environment, DictLoader
+from jinja2 import Template
 from loguru import logger as log
 
 from configurations import EmailSenderConfig
@@ -10,10 +11,12 @@ class EmailSender:
     def __init__(self):
         self.env = Environment(loader=DictLoader({}))
         self.server = None
+        self.open_session()
 
     def open_session(self):
         try:
-            self.server = smtplib.SMTP(EmailSenderConfig.SMTP_SERVER , EmailSenderConfig.SMTP_PORT)
+            log.info("Попытка открыть SMTP сессию")
+            self.server = smtplib.SMTP(EmailSenderConfig.SMTP_SERVER , EmailSenderConfig.SMTP_PORT, timeout=15)
             self.server.starttls()
             self.server.login(EmailSenderConfig.SMTP_USERNAME, EmailSenderConfig.SMTP_PASSWORD)
             log.info("SMTP session opened successfully")
@@ -42,6 +45,9 @@ class EmailSender:
             self.server.quit()
             log.info("SMTP session closed")
 
-    def generate_html_from_string(self, template_content:str, data:dict):
-        template = self.env.from_string(template_content)
+    def generate_html_from_string(self, data:dict):
+        with open('template.html', 'r', encoding='utf-8') as file:
+            template_string = file.read()
+
+        template = Template(template_string)
         return template.render(data)

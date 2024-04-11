@@ -20,10 +20,6 @@ class KafkaConsumer:
             log.error(f"Unvalid data. Resived message: {message}")
             return None
         
-        booking_id = message.get('booking_id')
-        text = message.get('text')
-        if booking_id is None or text is None:
-            log.error(f"booking_id or text is undefined. Resived: {message.value().decode('utf-8')}")
-            return None
+        booking_id = message.get('booking').get("id")
         log.info(f"Resived message: {message}")
-        return (booking_id, text)
+        return (booking_id, message)
