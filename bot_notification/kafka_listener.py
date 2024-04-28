@@ -20,6 +20,5 @@ class KafkaConsumer:
             log.error(f"Unvalid data. Resived message: {message}")
             return None
         
-        booking_id = message.get('booking').get("id")
         log.info(f"Resived message: {message}")
-        return (booking_id, message)
+        return message

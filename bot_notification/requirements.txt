@@ -3,3 +3,7 @@ confluent_kafka
 apscheduler
 sqlalchemy
 loguru 
+requests
+pyjwt
+schedule
+pybase64

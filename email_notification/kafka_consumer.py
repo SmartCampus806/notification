@@ -23,10 +23,12 @@ class KafkaConsumer:
             if message is None:
                 time.sleep(1)
                 continue
+
+            log.info(f"resived message: {message}")
             try:
                 message = json.loads(message.value().decode('utf-8'))
             except Exception as ex:
-                log.info(f"Error on parsing message. Exeption {message}")
+                log.info(f"Error on parsing message. Exeption {ex}")
 
             self.normalize_data(message)
             users = message.get("booking").get("staff")
@@ -34,13 +36,7 @@ class KafkaConsumer:
 
             for user in users:
                 message["current_user"] = user
-
-                result = self.sender.generate_html_from_string(message)
-                log.info(f"Message from kafka resived. HTML data: {result}")
-                self.sender.send_email("Обновление информации по бронированию", result, user.get("username"))
-            
-            
-                # log.info(f'Error on parsing message. Message: {message.value().decode('utf-8')}')
+                self.sender.send_template_message("Обновление информации по бронированию", "template.html", message, user.get("username"))  
 
     def normalize_data(self, booking: dict):
         start_time_obj = datetime.fromisoformat(booking.get("booking").get("startTime").replace('Z', '+00:00'))

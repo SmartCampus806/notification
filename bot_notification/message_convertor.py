@@ -42,7 +42,7 @@ def __normalize_data(booking: dict):
 
     booking["booking"]["startTime"] = start_time_obj.time().strftime('%H:%M')
     booking["booking"]["endTime"]   = end_time_obj.time().strftime('%H:%M')
-    booking["booking"]["date"]      = f"{date.day} {months[date.month]} {date.year}"
+    booking["booking"]["date"]      = f"{date.day} {months[date.month-1]} {date.year}"
     
 
 def __get_title_from_action(booking: dict):

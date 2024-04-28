@@ -10,6 +10,7 @@ class User(Base):
 
     chat_id = Column(Integer, primary_key=True)
     id = Column(Integer)
+    username = Column(String)
     is_admin = Column(Boolean, default=False)
 
 class Message(Base):
@@ -27,10 +28,10 @@ class UserManager:
         Base.metadata.create_all(self.engine)
         self.User = User
 
-    def add_user(self, chat_id, user_id, is_admin):
+    def add_user(self, chat_id, user_id, is_admin, username):
         try:
             session = self.Session()
-            user = self.User(chat_id=chat_id, id=user_id, is_admin=is_admin)
+            user = self.User(chat_id=chat_id, id=user_id, is_admin=is_admin, username=username)
             session.add(user)
             session.commit()
             session.close()
@@ -50,6 +51,12 @@ class UserManager:
         session.close()
         return user
 
+    def find_by_username(self, username: str):
+        session = self.Session()
+        user = session.query(self.User).filter_by(username=username).first()
+        session.close()
+        return user
+
     def set_admin_status(self, user_id, is_admin):
         session = self.Session()
         user = session.query(self.User).filter_by(id=user_id).first()
@@ -59,17 +66,25 @@ class UserManager:
             log.info(f"set status is_admin={is_admin} by user with user_id={user_id}")
         session.close()
 
+    def update_user_by_chat_id(self, chat_id, user_id, is_admin, username):
+        session = self.Session()
+        user = session.query(self.User).filter_by(chat_id=chat_id).first()
+        if user:
+            user.id = user_id
+            user.is_admin = is_admin
+            user.username = username
+            session.commit()
+        session.close()
 
     def get_admin_users(self):
         session = self.Session()
         admin_users = session.query(self.User).filter_by(is_admin=True).all()
         session.close()
-
         return admin_users
 
 class MessageManager:
     def __init__(self):
-        self.engine = create_engine('sqlite:///users.db')
+        self.engine = create_engine('sqlite:///bot.db')
         self.Session = sessionmaker(bind=self.engine)
         Base.metadata.create_all(self.engine)
         self.Message = Message
@@ -81,7 +96,7 @@ class MessageManager:
             session.add(message)
             session.commit()
             session.close()
-            log.info(f"Saved message whis data: {booking_id}, {message_id}, {chat_id}, {text}.")
+            log.info(f"Saved message whis data: {booking_id}, {message_id}, {chat_id}.")
         except:
             pass
 
