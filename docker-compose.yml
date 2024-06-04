@@ -56,11 +56,10 @@ services:
   #     - kafka
   #     - kafka2
   
-  # email:
-  #   build:
-  #     context: email_notification/
-  #     dockerfile: Dockerfile
-  #   network_mode: "host"
-  #   depends_on:
-  #     - kafka
-  #     - kafka2
+  email:
+    build:
+      context: email_notification/
+      dockerfile: Dockerfile
+    network_mode: "host"
+    depends_on:
+      - kafka-ui
