@@ -1,5 +1,5 @@
 class KafkaConfig:
-    KAFKA_SERVERS = 'localhost:9092'
+    KAFKA_SERVERS = 'kafka:9092'
     CONSUMER_GROUP = 'email'
     KAFKA_TOPIC = 'notifications'
     AUTO_OFFSET_RESET = 'earliest'
